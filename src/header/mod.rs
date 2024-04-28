@@ -25,13 +25,11 @@ impl Header {
     pub fn response(code: isize, content_type: &str, content: Vec<u8>) -> Header {
         Header::ResponseHeader(ResponseHeader::new(code, content_type, content))
     }
+}
 
-    pub fn get_path(&self) -> &str {
-        match self {
-            Header::RequestHeader(req) => req.get_path(),
-            _ => ""
-        }
-    }
+pub trait HeaderData {
+    fn get_path(&self) -> &str;
+    fn get_data(&self, key: &str) -> String;
 }
 
 pub trait Parser {
@@ -48,6 +46,22 @@ impl Parser for Header {
         match self {
             Header::RequestHeader(req_header) => req_header.parse(header_data),
             _ => Err(Default::default())
+        }
+    }
+}
+
+impl HeaderData for Header {
+    fn get_path(&self) -> &str {
+        match self {
+            Header::RequestHeader(req) => req.get_path(),
+            _ => ""
+        }
+    }
+
+    fn get_data(&self, key: &str) -> String {
+        match self {
+            Header::RequestHeader(req) => req.get_data(key),
+            _ => "".to_string()
         }
     }
 }

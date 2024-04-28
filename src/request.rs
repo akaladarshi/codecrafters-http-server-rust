@@ -3,7 +3,7 @@ use std::io::Read;
 
 use itertools::Itertools;
 
-use crate::header::{Header, Parser};
+use crate::header::{Header, HeaderData, Parser};
 
 const CRLF: &str = "\r\n";
 pub struct Request {
@@ -36,6 +36,10 @@ impl Request {
     }
 
     pub fn get_path(&self) -> &str {
-        self.header.get_path()
+        HeaderData::get_path(&self.header)
+    }
+
+    pub fn get_data(&self, key: &str) -> String {
+        HeaderData::get_data(&self.header, key)
     }
 }

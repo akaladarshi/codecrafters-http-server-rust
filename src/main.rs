@@ -53,6 +53,10 @@ fn process_req(req: reqs) -> Response {
     let echo_reg = Regex::new(r"^/echo/([a-z]+)").unwrap();
     match req.get_path() {
         "/" => resp::create_response(HTTP_STATUS_OK, Body::empty()),
+        "/user-agent" => {
+            let body = Body::new(CONTENT_TYPE_TEXT,  Vec::from(req.get_data("user-agent")));
+            resp::create_response(HTTP_STATUS_OK, body)
+        },
         path if echo_reg.is_match(path) => {
             let captures = echo_reg.captures(path).unwrap().get(1).unwrap();
             let body = Body::new(CONTENT_TYPE_TEXT,  Vec::from(captures.as_str()));

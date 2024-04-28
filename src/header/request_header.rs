@@ -38,12 +38,13 @@ impl RequestHeader {
         // rest will be header data
         for d in data.into_iter() {
             if let Some((key, value)) = d.split_once(":") {
-                self.data.insert(key.to_string(), value.to_string());
+                self.data.insert(key.trim().to_lowercase(), value.trim().to_lowercase());
             }
         }
 
         Ok(())
     }
+
 
     // parse_status_line parse the first line of the header data which should contains
     // HTTPMethod path Protocol Version
@@ -63,6 +64,13 @@ impl RequestHeader {
 
         self.protocol_version = version;
         Ok(())
+    }
+
+    pub fn get_data(&self, key: &str) -> String {
+        match self.data.get(key) {
+            None => "".to_string(),
+            Some(s) => s.to_string()
+        }
     }
 
     pub fn get_path(&self) -> &str {

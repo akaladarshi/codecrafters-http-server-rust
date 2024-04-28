@@ -1,22 +1,23 @@
 use std::fmt::Error;
-use crate::header::Header;
-use std::io::{Read};
+use std::io::Read;
+
 use itertools::Itertools;
 
+use crate::header::{Header, Parser};
 
 const CRLF: &str = "\r\n";
-#[allow(dead_code)]
 pub struct Request {
     header: Header,
-    data: Vec<u8>
+    #[allow(dead_code)]
+    body: Vec<u8>
 }
 
 impl Request {
 
     pub fn new() -> Self {
         Request {
-            header: Header::new(),
-            data: vec![]
+            header: Header::request(),
+            body: vec![]
         }
     }
     pub fn parse_data<R: Read>(&mut self, reader: &mut R) -> Result<(), Error> {
@@ -31,7 +32,7 @@ impl Request {
         // Header data will be separated by \r\n
         // but the last value of header and end of header will exist together
         // HEADER \r\n\r\n DATA
-        self.header.parse(req_data[0])
+        Parser::parse(&mut self.header, req_data[0])
     }
 
     pub fn get_path(&self) -> &str {

@@ -1,34 +1,33 @@
-
 use std::fmt::Error;
-
 use std::io::Write;
-use nom::AsBytes;
 
-
-use crate::header::Header;
+use crate::body::Body;
+use crate::header::{Header, Serializer};
 
 const CRLF: &str = "\r\n";
 
 pub struct Response {
     header: Header,
-    data: Vec<u8>
+    body: Body
 }
 
 impl Response {
-    pub fn create_response(status: isize, data: Vec<u8> ) -> Response {
+    pub fn create_response(status: isize, body: Body ) -> Response {
         Response {
-            header: Header::new_with_status(status),
-            data
+            header: Header::response(status, body.get_content_type(), body.get_content()),
+            body
         }
     }
 
     pub fn write<W: Write>(&self, writer:  &mut W) -> Result<(), Error> {
-        self.header.write(writer)?;
+        Serializer::serialize(&self.header, writer)?;
 
         // write end of header CRLF
         writer.write(CRLF.as_bytes()).map_err(|_| Error)?;
 
-        // write header data
-        writer.write_all(self.data.as_bytes()).map_err(|_| Error)
+        // write response body
+        self.body.write(writer)?;
+
+        Ok(())
     }
 }

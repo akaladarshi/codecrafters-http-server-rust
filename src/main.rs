@@ -1,16 +1,22 @@
+use std::fmt::Error;
+// Uncomment this block to pass the first stage
+use std::net::{TcpListener, TcpStream};
+
+use regex::Regex;
+
+use request::Request as reqs;
+use response::Response as resp;
+
+use crate::body::Body;
+use crate::constants::*;
+use crate::response::Response;
 
 mod header;
 mod response;
 mod request;
 mod constants;
-
-use std::fmt::Error;
-use response::Response as resp;
-use request::Request as reqs;
-// Uncomment this block to pass the first stage
-use std::net::{TcpListener, TcpStream};
-use crate::constants::{HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK};
-use crate::response::Response;
+mod body;
+mod content;
 
 const SERVER_ADDRESS: &str = "127.0.0.1:4221";
 fn main() {
@@ -44,8 +50,14 @@ fn handle_conn(mut conn: TcpStream) -> Result<(), Error> {
 }
 
 fn process_req(req: reqs) -> Response {
-    match req.get_path(){
-        "/" => resp::create_response(HTTP_STATUS_OK, vec![]),
-        _ => resp::create_response(HTTP_STATUS_NOT_FOUND, vec![])
+    let echo_reg = Regex::new(r"^/echo/([a-z]+)").unwrap();
+    match req.get_path() {
+        "/" => resp::create_response(HTTP_STATUS_OK, Body::empty()),
+        path if echo_reg.is_match(path) => {
+            let captures = echo_reg.captures(path).unwrap().get(1).unwrap();
+            let body = Body::new(CONTENT_TYPE_TEXT,  Vec::from(captures.as_str()));
+            resp::create_response(HTTP_STATUS_OK, body)
+        },
+        _ => resp::create_response(HTTP_STATUS_NOT_FOUND, Body::empty())
     }
 }

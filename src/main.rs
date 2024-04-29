@@ -1,6 +1,7 @@
 use std::fmt::Error;
 // Uncomment this block to pass the first stage
 use std::net::{TcpListener, TcpStream};
+use std::thread;
 
 use regex::Regex;
 
@@ -25,19 +26,20 @@ fn main() {
     println!("Started listening to server {}", SERVER_ADDRESS);
 
     for stream in listener.incoming() {
-        println!("Received connection");
-
-        match stream {
-            Ok(stream) => {
-                match handle_conn(stream) {
-                    Ok(_) => {},
-                    Err(e) => println!("failed to handle the conn: {}", e)
+        thread::spawn(|| {
+            println!("Received connection");
+            match stream {
+                Ok(stream) => {
+                    match handle_conn(stream) {
+                        Ok(_) => {},
+                        Err(e) => eprintln!("failed to handle the conn: {}", e)
+                    }
+                }
+                Err(e) => {
+                    eprintln!("failed to get connection: {}", e);
                 }
             }
-            Err(e) => {
-                println!("error: {}", e);
-            }
-        }
+        });
     }
 }
 

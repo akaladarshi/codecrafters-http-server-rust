@@ -1,4 +1,4 @@
-use std::fmt::Error;
+use std::io;
 use std::io::Write;
 
 use crate::body::Body;
@@ -19,11 +19,11 @@ impl Response {
         }
     }
 
-    pub fn write<W: Write>(&self, writer:  &mut W) -> Result<(), Error> {
+    pub fn write<W: Write>(&self, writer:  &mut W) -> Result<(), io::Error> {
         Serializer::serialize(&self.header, writer)?;
 
         // write end of header CRLF
-        writer.write(CRLF.as_bytes()).map_err(|_| Error)?;
+        writer.write(CRLF.as_bytes())?;
 
         // write response body
         self.body.write(writer)?;

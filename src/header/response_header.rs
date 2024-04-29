@@ -1,4 +1,4 @@
-use std::fmt::Error;
+use std::io;
 use std::io::Write;
 
 use crate::header::{CRLF, PROTOCOL_VERSION};
@@ -20,15 +20,15 @@ impl ResponseHeader {
             content,
         }
     }
-    pub fn serialize<W: Write>(&self, writer:  &mut W) -> Result<usize, Error> {
+    pub fn serialize<W: Write>(&self, writer:  &mut W) -> Result<usize, io::Error> {
         // write status line with end of status CRLF
-        let n = writer.write(format!("{} {}{}", self.protocol_version, self.status.string(), CRLF).as_bytes()).map_err(|_| Error)?;
+        let n = writer.write(format!("{} {}{}", self.protocol_version, self.status.string(), CRLF).as_bytes())?;
         if self.content.is_empty() {
             return Ok(n)
         }
 
-        writer.write(format!("{}: {}{}", "Content-Type", self.content_type, CRLF).as_bytes()).map_err(|_| Error)?;
-        writer.write(format!("{}: {}{}", "Content-Length", self.content.len(), CRLF).as_bytes()).map_err(|_| Error)
+        writer.write(format!("{}: {}{}", "Content-Type", self.content_type, CRLF).as_bytes())?;
+        writer.write(format!("{}: {}{}", "Content-Length", self.content.len(), CRLF).as_bytes())
     }
 
 }

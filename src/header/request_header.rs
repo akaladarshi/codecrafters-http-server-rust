@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fmt::Error;
+use std::io;
 
 use itertools::Itertools;
 
@@ -26,7 +26,7 @@ impl RequestHeader {
 
     // parse parses the header data
     // all the header data is separated by CRLF.
-    pub fn parse(&mut self, header_data: &str) -> Result<(), Error> {
+    pub fn parse(&mut self, header_data: &str) -> Result<(), io::Error> {
         let data = header_data.split(CRLF).collect_vec();
         if data.is_empty() {
             return Err(HeaderError::NoHeaderFound.into())
@@ -75,5 +75,9 @@ impl RequestHeader {
 
     pub fn get_path(&self) -> &str {
         self.path.as_str()
+    }
+
+    pub fn get_method(&self) -> &str {
+        self.method.string()
     }
 }

@@ -1,6 +1,6 @@
 use std::{fmt, io};
-use std::fmt::Formatter;
 use std::error::Error;
+use std::fmt::Formatter;
 
 #[derive(Debug)]
 pub enum HeaderError {
@@ -31,8 +31,9 @@ impl From<io::Error> for HeaderError{
     }
 }
 
-impl From<HeaderError> for fmt::Error {
-    fn from(_: HeaderError) -> Self {
-        fmt::Error
+impl From<HeaderError> for io::Error {
+    fn from(err: HeaderError) -> Self {
+        io::Error::new(io::ErrorKind::Other, err.to_string())
     }
 }
+

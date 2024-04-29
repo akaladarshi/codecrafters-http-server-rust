@@ -1,4 +1,4 @@
-use std::fmt::Error;
+use std::io;
 use std::io::Write;
 
 use nom::AsBytes;
@@ -33,8 +33,8 @@ impl Body {
         self.content.clone()
     }
 
-    pub fn write<W: Write>(&self, writer: &mut W) -> Result<usize, Error> {
-        writer.write(self.content.as_bytes()).map_err(|_| Error)
+    pub fn write<W: Write>(&self, writer: &mut W) -> Result<usize, io::Error> {
+        writer.write(self.content.as_bytes())
     }
 
 }

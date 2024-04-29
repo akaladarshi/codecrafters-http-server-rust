@@ -1,4 +1,4 @@
-use std::fmt::Error;
+use std::io;
 use std::io::Write;
 
 use crate::header::request_header::RequestHeader;
@@ -30,22 +30,24 @@ impl Header {
 pub trait HeaderData {
     fn get_path(&self) -> &str;
     fn get_data(&self, key: &str) -> String;
+
+    fn get_method(&self) -> Option<&str>;
 }
 
 pub trait Parser {
-    fn parse(&mut self, header_data: &str) -> Result<(), Error>;
+    fn parse(&mut self, header_data: &str) -> Result<(), io::Error>;
 }
 
 pub trait Serializer {
-    fn serialize<W: Write>(&self, writer:  &mut W) -> Result<usize, Error>;
+    fn serialize<W: Write>(&self, writer:  &mut W) -> Result<usize, io::Error>;
 }
 
 
 impl Parser for Header {
-    fn parse(&mut self, header_data: &str) -> Result<(), Error> {
+    fn parse(&mut self, header_data: &str) -> Result<(), io::Error> {
         match self {
             Header::RequestHeader(req_header) => req_header.parse(header_data),
-            _ => Err(Default::default())
+            _ => Err(io::Error::new(io::ErrorKind::Other, format!("{}", "failed to parse header")))
         }
     }
 }
@@ -64,13 +66,20 @@ impl HeaderData for Header {
             _ => "".to_string()
         }
     }
+
+    fn get_method(&self) -> Option<&str> {
+        match self {
+            Header::RequestHeader(req) => Some(req.get_method()),
+            _ => None,
+        }
+    }
 }
 
 impl Serializer for Header {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<usize, Error> {
+    fn serialize<W: Write>(&self, writer: &mut W) -> Result<usize, io::Error> {
         match self {
             Header::ResponseHeader(res_header) => res_header.serialize(writer),
-            _ => Err(Default::default())
+            _ => Err(io::Error::new(io::ErrorKind::Other, format!("{}", "failed to serialize header")))
         }
     }
 }

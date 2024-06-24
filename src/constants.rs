@@ -7,3 +7,5 @@ pub const CONTENT_TYPE_OCTET: &str = "application/octet-stream";
 
 pub const HTTP_GET: &str = "GET";
 pub const HTTP_POST: &str = "POST";
+
+pub const GZIP: &str = "gzip";

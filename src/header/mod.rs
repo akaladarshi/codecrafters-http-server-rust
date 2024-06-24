@@ -9,6 +9,7 @@ mod methods;
 mod errors;
 mod request_header;
 mod response_header;
+mod encoding;
 
 const CRLF: &str = "\r\n";
 const PROTOCOL_VERSION: &str = "HTTP/1.1";
@@ -22,7 +23,7 @@ impl Header {
         Header::RequestHeader(RequestHeader::new())
     }
 
-    pub fn response(code: isize, encoding_type: &str, content_type: &str, content: Vec<u8>) -> Header {
+    pub fn response(code: isize, encoding_type: Vec<&str>, content_type: &str, content: Vec<u8>) -> Header {
         Header::ResponseHeader(ResponseHeader::new(code, encoding_type, content_type, content))
     }
 }

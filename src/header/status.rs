@@ -12,7 +12,7 @@ impl Status {
         match self {
             Status::Ok => "200 OK",
             Status::NotFound => "404 Not Found",
-            Status::Created => "201",
+            Status::Created => "201 Created",
         }
     }
 

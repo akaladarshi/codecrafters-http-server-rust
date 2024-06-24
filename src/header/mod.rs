@@ -22,8 +22,8 @@ impl Header {
         Header::RequestHeader(RequestHeader::new())
     }
 
-    pub fn response(code: isize, content_type: &str, content: Vec<u8>) -> Header {
-        Header::ResponseHeader(ResponseHeader::new(code, content_type, content))
+    pub fn response(code: isize, encoding_type: &str, content_type: &str, content: Vec<u8>) -> Header {
+        Header::ResponseHeader(ResponseHeader::new(code, encoding_type, content_type, content))
     }
 }
 

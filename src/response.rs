@@ -12,9 +12,9 @@ pub struct Response {
 }
 
 impl Response {
-    pub fn create_response(status: isize, body: Body ) -> Response {
+    pub fn create_response(status: isize, encoding_type: &str, body: Body ) -> Response {
         Response {
-            header: Header::response(status, body.get_content_type(), body.get_content()),
+            header: Header::response(status, encoding_type, body.get_content_type(), body.get_content()),
             body
         }
     }
